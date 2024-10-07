@@ -11,9 +11,9 @@ namespace Common.Encoder;
 
 public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
 {
-    private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Create();
+    private static readonly MemoryPool<byte> MemoryPool = MemoryPool<byte>.Shared;
     private static readonly ConcurrentDictionary<MessageDescriptor, FieldDescriptor> FieldDescriptorCache = new(Packet.Descriptor.Fields.InDeclarationOrder().ToDictionary(x => x.MessageType, x => x));
-    
+
     protected override void Encode(IChannelHandlerContext context, IMessage message, IByteBuffer output)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -27,16 +27,24 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
         field.Accessor.SetValue(packet, message);
 
         var length = packet.CalculateSize();
-        var array = ArrayPool.Rent(length);
-        
-        try
+        using var memoryOwner = MemoryPool.Rent(length);
+
+        var memory = memoryOwner.Memory;
+        packet.WriteTo(memory.Span);
+
+        if (output.HasArray)
         {
-            packet.WriteTo(array.AsSpan(0, length));
-            output.WriteBytes(array, 0, length);
+            output.EnsureWritable(length);
+            var startIndex = output.ArrayOffset + output.WriterIndex;
+            memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
+            output.SetWriterIndex(output.WriterIndex + length);
         }
-        finally
+        else
         {
-            ArrayPool.Return(array);
+#if DEBUG
+            Console.WriteLine("MemoryPackPacketEncoder: output does not have array");
+#endif
+            output.WriteBytes(memory.Span[..length].ToArray());
         }
     }
 }
