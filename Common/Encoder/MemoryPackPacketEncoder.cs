@@ -49,4 +49,10 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
             writer.Flush();
         }
     }
+
+    public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+    {
+        Console.WriteLine(exception);
+        base.ExceptionCaught(context, exception);
+    }
 }
