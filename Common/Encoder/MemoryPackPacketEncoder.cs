@@ -38,7 +38,9 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
             }
             else
             {
+#if DEBUG
                 Console.WriteLine("MemoryPackPacketEncoder: output does not have array");
+#endif
                 output.WriteBytes(memory.Span[..length].ToArray());
             }
         }
