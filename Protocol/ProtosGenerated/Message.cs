@@ -27,15 +27,16 @@ namespace Protocol.Protobuf {
             "Cg1tZXNzYWdlLnByb3RvEhFQcm90b2NvbC5Qcm90b2J1ZiJiCgZQYWNrZXQS",
             "JwoEcGluZxgBIAEoCzIXLlByb3RvY29sLlByb3RvYnVmLlBpbmdIABInCgRw",
             "b25nGAIgASgLMhcuUHJvdG9jb2wuUHJvdG9idWYuUG9uZ0gAQgYKBERhdGEi",
-            "NgoEUGluZxISCgpjaGFubmVsX2lkGAEgASgJEgwKBGRhdGEYAiABKAUSDAoE",
-            "dGltZRgDIAEoAyI2CgRQb25nEhIKCmNoYW5uZWxfaWQYASABKAkSDAoEZGF0",
-            "YRgCIAEoBRIMCgR0aW1lGAMgASgDYgZwcm90bzM="));
+            "RwoEUGluZxISCgpjaGFubmVsX2lkGAEgASgJEg8KB21lc3NhZ2UYAiABKAkS",
+            "DAoEZGF0YRgDIAEoBRIMCgR0aW1lGAQgASgDIkcKBFBvbmcSEgoKY2hhbm5l",
+            "bF9pZBgBIAEoCRIPCgdtZXNzYWdlGAIgASgJEgwKBGRhdGEYAyABKAUSDAoE",
+            "dGltZRgEIAEoA2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Protobuf.Packet), global::Protocol.Protobuf.Packet.Parser, new[]{ "Ping", "Pong" }, new[]{ "Data" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Protobuf.Ping), global::Protocol.Protobuf.Ping.Parser, new[]{ "ChannelId", "Data", "Time" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Protobuf.Pong), global::Protocol.Protobuf.Pong.Parser, new[]{ "ChannelId", "Data", "Time" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Protobuf.Ping), global::Protocol.Protobuf.Ping.Parser, new[]{ "ChannelId", "Message", "Data", "Time" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Protocol.Protobuf.Pong), global::Protocol.Protobuf.Pong.Parser, new[]{ "ChannelId", "Message", "Data", "Time" }, null, null, null, null)
           }));
     }
     #endregion
@@ -372,6 +373,7 @@ namespace Protocol.Protobuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Ping(Ping other) : this() {
       channelId_ = other.channelId_;
+      message_ = other.message_;
       data_ = other.data_;
       time_ = other.time_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -395,8 +397,20 @@ namespace Protocol.Protobuf {
       }
     }
 
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 2;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "data" field.</summary>
-    public const int DataFieldNumber = 2;
+    public const int DataFieldNumber = 3;
     private int data_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -408,7 +422,7 @@ namespace Protocol.Protobuf {
     }
 
     /// <summary>Field number for the "time" field.</summary>
-    public const int TimeFieldNumber = 3;
+    public const int TimeFieldNumber = 4;
     private long time_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -435,6 +449,7 @@ namespace Protocol.Protobuf {
         return true;
       }
       if (ChannelId != other.ChannelId) return false;
+      if (Message != other.Message) return false;
       if (Data != other.Data) return false;
       if (Time != other.Time) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -445,6 +460,7 @@ namespace Protocol.Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (ChannelId.Length != 0) hash ^= ChannelId.GetHashCode();
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (Data != 0) hash ^= Data.GetHashCode();
       if (Time != 0L) hash ^= Time.GetHashCode();
       if (_unknownFields != null) {
@@ -469,12 +485,16 @@ namespace Protocol.Protobuf {
         output.WriteRawTag(10);
         output.WriteString(ChannelId);
       }
+      if (Message.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Message);
+      }
       if (Data != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(Data);
       }
       if (Time != 0L) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteInt64(Time);
       }
       if (_unknownFields != null) {
@@ -491,12 +511,16 @@ namespace Protocol.Protobuf {
         output.WriteRawTag(10);
         output.WriteString(ChannelId);
       }
+      if (Message.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Message);
+      }
       if (Data != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(Data);
       }
       if (Time != 0L) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteInt64(Time);
       }
       if (_unknownFields != null) {
@@ -511,6 +535,9 @@ namespace Protocol.Protobuf {
       int size = 0;
       if (ChannelId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ChannelId);
+      }
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
       }
       if (Data != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Data);
@@ -532,6 +559,9 @@ namespace Protocol.Protobuf {
       }
       if (other.ChannelId.Length != 0) {
         ChannelId = other.ChannelId;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
       }
       if (other.Data != 0) {
         Data = other.Data;
@@ -562,11 +592,15 @@ namespace Protocol.Protobuf {
             ChannelId = input.ReadString();
             break;
           }
-          case 16: {
-            Data = input.ReadInt32();
+          case 18: {
+            Message = input.ReadString();
             break;
           }
           case 24: {
+            Data = input.ReadInt32();
+            break;
+          }
+          case 32: {
             Time = input.ReadInt64();
             break;
           }
@@ -593,11 +627,15 @@ namespace Protocol.Protobuf {
             ChannelId = input.ReadString();
             break;
           }
-          case 16: {
-            Data = input.ReadInt32();
+          case 18: {
+            Message = input.ReadString();
             break;
           }
           case 24: {
+            Data = input.ReadInt32();
+            break;
+          }
+          case 32: {
             Time = input.ReadInt64();
             break;
           }
@@ -644,6 +682,7 @@ namespace Protocol.Protobuf {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Pong(Pong other) : this() {
       channelId_ = other.channelId_;
+      message_ = other.message_;
       data_ = other.data_;
       time_ = other.time_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -667,8 +706,20 @@ namespace Protocol.Protobuf {
       }
     }
 
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 2;
+    private string message_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "data" field.</summary>
-    public const int DataFieldNumber = 2;
+    public const int DataFieldNumber = 3;
     private int data_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -680,7 +731,7 @@ namespace Protocol.Protobuf {
     }
 
     /// <summary>Field number for the "time" field.</summary>
-    public const int TimeFieldNumber = 3;
+    public const int TimeFieldNumber = 4;
     private long time_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -707,6 +758,7 @@ namespace Protocol.Protobuf {
         return true;
       }
       if (ChannelId != other.ChannelId) return false;
+      if (Message != other.Message) return false;
       if (Data != other.Data) return false;
       if (Time != other.Time) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -717,6 +769,7 @@ namespace Protocol.Protobuf {
     public override int GetHashCode() {
       int hash = 1;
       if (ChannelId.Length != 0) hash ^= ChannelId.GetHashCode();
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (Data != 0) hash ^= Data.GetHashCode();
       if (Time != 0L) hash ^= Time.GetHashCode();
       if (_unknownFields != null) {
@@ -741,12 +794,16 @@ namespace Protocol.Protobuf {
         output.WriteRawTag(10);
         output.WriteString(ChannelId);
       }
+      if (Message.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Message);
+      }
       if (Data != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(Data);
       }
       if (Time != 0L) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteInt64(Time);
       }
       if (_unknownFields != null) {
@@ -763,12 +820,16 @@ namespace Protocol.Protobuf {
         output.WriteRawTag(10);
         output.WriteString(ChannelId);
       }
+      if (Message.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Message);
+      }
       if (Data != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(Data);
       }
       if (Time != 0L) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteInt64(Time);
       }
       if (_unknownFields != null) {
@@ -783,6 +844,9 @@ namespace Protocol.Protobuf {
       int size = 0;
       if (ChannelId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ChannelId);
+      }
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message);
       }
       if (Data != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Data);
@@ -804,6 +868,9 @@ namespace Protocol.Protobuf {
       }
       if (other.ChannelId.Length != 0) {
         ChannelId = other.ChannelId;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
       }
       if (other.Data != 0) {
         Data = other.Data;
@@ -834,11 +901,15 @@ namespace Protocol.Protobuf {
             ChannelId = input.ReadString();
             break;
           }
-          case 16: {
-            Data = input.ReadInt32();
+          case 18: {
+            Message = input.ReadString();
             break;
           }
           case 24: {
+            Data = input.ReadInt32();
+            break;
+          }
+          case 32: {
             Time = input.ReadInt64();
             break;
           }
@@ -865,11 +936,15 @@ namespace Protocol.Protobuf {
             ChannelId = input.ReadString();
             break;
           }
-          case 16: {
-            Data = input.ReadInt32();
+          case 18: {
+            Message = input.ReadString();
             break;
           }
           case 24: {
+            Data = input.ReadInt32();
+            break;
+          }
+          case 32: {
             Time = input.ReadInt64();
             break;
           }
