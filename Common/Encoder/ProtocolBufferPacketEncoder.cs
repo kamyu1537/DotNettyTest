@@ -5,6 +5,7 @@ using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
+using Microsoft.Extensions.ObjectPool;
 using Protocol.Protobuf;
 
 namespace Common.Encoder;
@@ -13,6 +14,7 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
 {
     private static readonly MemoryPool<byte> MemoryPool = MemoryPool<byte>.Shared;
     private static readonly ConcurrentDictionary<MessageDescriptor, FieldDescriptor> FieldDescriptorCache = new(Packet.Descriptor.Fields.InDeclarationOrder().ToDictionary(x => x.MessageType, x => x));
+    private static readonly ObjectPool<Packet> PacketPool = ObjectPool.Create<Packet>();
 
     protected override void Encode(IChannelHandlerContext context, IMessage message, IByteBuffer output)
     {
@@ -23,33 +25,38 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
             throw new InvalidOperationException("field not found");
         }
 
-        var packet = new Packet();
-        field.Accessor.SetValue(packet, message);
-        var length = packet.CalculateSize();
+        var packet = PacketPool.Get();
+        try
+        {
+            packet.ClearData();
+            
+            field.Accessor.SetValue(packet, message);
+            var length = packet.CalculateSize();
         
-        using var memoryOwner = MemoryPool.Rent(length);
-        var memory = memoryOwner.Memory;
-        packet.WriteTo(memory.Span[..length]);
-
-        if (output.HasArray)
-        {
+            using var memoryOwner = MemoryPool.Rent(length);
+            var memory = memoryOwner.Memory;
+            packet.WriteTo(memory.Span[..length]);
             output.EnsureWritable(length);
-            var startIndex = output.ArrayOffset + output.WriterIndex;
-            memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
-            output.SetWriterIndex(output.WriterIndex + length);
+        
+            if (output.HasArray)
+            {
+                var startIndex = output.ArrayOffset + output.WriterIndex;
+                memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
+                output.SetWriterIndex(output.WriterIndex + length);
+            }
+            else
+            {
+                output.WriteBytes(memory.Span[..length].ToArray());
+            }
         }
-        else
+        finally
         {
-#if DEBUG
-            Console.WriteLine("MemoryPackPacketEncoder: output does not have array");
-#endif
-            output.WriteBytes(memory.Span[..length].ToArray());
+            PacketPool.Return(packet);
         }
     }
     
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
-        Console.WriteLine(exception);
-        base.ExceptionCaught(context, exception);
+        context.FireExceptionCaught(exception);
     }
 }

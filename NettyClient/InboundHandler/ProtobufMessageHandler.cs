@@ -27,6 +27,6 @@ public class ProtobufMessageHandler : SimpleChannelInboundHandler<IMessage>
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
         Console.WriteLine("[MessageHandler] ExceptionCaught: " + exception);
-        base.ExceptionCaught(context, exception);
+        context.FireExceptionCaught(exception);
     }
 }

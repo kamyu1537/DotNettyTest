@@ -28,19 +28,16 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
         {
             writer.WriteValue(message);
             var length = writer.WrittenCount;
+            output.EnsureWritable(length);
             
             if (output.HasArray)
             {
-                output.EnsureWritable(length);
                 var startIndex = output.ArrayOffset + output.WriterIndex;
                 memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
                 output.SetWriterIndex(output.WriterIndex + length);
             }
             else
             {
-#if DEBUG
-                Console.WriteLine("MemoryPackPacketEncoder: output does not have array");
-#endif
                 output.WriteBytes(memory.Span[..length].ToArray());
             }
         }
@@ -52,7 +49,6 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
 
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
-        Console.WriteLine(exception);
-        base.ExceptionCaught(context, exception);
+        context.FireExceptionCaught(exception);
     }
 }

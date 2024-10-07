@@ -7,6 +7,6 @@ public class ExceptionCloseAdapter : ChannelHandlerAdapter
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
         context.CloseAsync();
-        base.ExceptionCaught(context, exception);
+        context.FireExceptionCaught(exception);
     }
 }

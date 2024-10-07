@@ -34,4 +34,9 @@ public class MemoryPackPacketDecoder : ByteToMessageDecoder
             ArrayPool.Return(array);
         }
     }
+
+    public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+    {
+        context.FireExceptionCaught(exception);
+    }
 }

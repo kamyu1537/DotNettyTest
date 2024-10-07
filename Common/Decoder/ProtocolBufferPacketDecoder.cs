@@ -11,7 +11,7 @@ namespace Common.Decoder;
 
 public class ProtocolBufferPacketDecoder : ByteToMessageDecoder
 {
-    private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Create();
+    private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Shared;
     
     protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
     {
@@ -37,5 +37,10 @@ public class ProtocolBufferPacketDecoder : ByteToMessageDecoder
         {
             ArrayPool.Return(array);
         }
+    }
+
+    public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+    {
+        context.FireExceptionCaught(exception);
     }
 }
