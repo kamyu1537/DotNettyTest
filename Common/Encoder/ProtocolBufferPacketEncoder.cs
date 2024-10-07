@@ -31,21 +31,20 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
         {
             field.Accessor.SetValue(packet, message);
             var length = packet.CalculateSize();
-        
-            using var memoryOwner = MemoryPool.Rent(length);
-            var memory = memoryOwner.Memory;
-            packet.WriteTo(memory.Span[..length]);
             output.EnsureWritable(length);
-        
+
             if (output.HasArray)
             {
-                var startIndex = output.ArrayOffset + output.WriterIndex;
-                memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
+                packet.WriteTo(output.Array.AsSpan(output.ArrayOffset + output.WriterIndex, length));
                 output.SetWriterIndex(output.WriterIndex + length);
             }
             else
             {
-                output.WriteBytes(memory.Span[..length].ToArray());
+                using var memoryOwner = MemoryPool.Rent(length);
+                var memory = memoryOwner.Memory;
+                var span = memory.Span[..length];
+                packet.WriteTo(span);
+                output.WriteBytes(span.ToArray());
             }
         }
         finally
@@ -53,9 +52,10 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
             PacketPool.Return(packet);
         }
     }
-    
+
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
+        Console.WriteLine($"ProtobufBufferPacketEncoder Exception: {exception}");
         context.FireExceptionCaught(exception);
     }
 }

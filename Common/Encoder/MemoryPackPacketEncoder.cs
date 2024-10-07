@@ -18,27 +18,26 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
         ArgumentNullException.ThrowIfNull(message);
 
         var dummyBufferWriter = Writer;
-        using var memoryOwner = MemoryPool.Rent();
+        
         using var memoryPackWriterState = MemoryPackWriterOptionalStatePool.Rent(null);
-
+        using var memoryOwner = MemoryPool.Rent();
         var memory = memoryOwner.Memory;
         var writer = new MemoryPackWriter<DummyBufferWriter>(ref dummyBufferWriter, memory.Span, memoryPackWriterState);
-        
         try
         {
             writer.WriteValue(message);
             var length = writer.WrittenCount;
-            output.EnsureWritable(length);
-            
+            var span = memory.Span[..length];
             if (output.HasArray)
             {
+                output.EnsureWritable(length);
                 var startIndex = output.ArrayOffset + output.WriterIndex;
-                memory.Span[..length].CopyTo(output.Array.AsSpan(startIndex, length));
+                span.CopyTo(output.Array.AsSpan(startIndex, length));
                 output.SetWriterIndex(output.WriterIndex + length);
             }
             else
             {
-                output.WriteBytes(memory.Span[..length].ToArray());
+                output.WriteBytes(span.ToArray());
             }
         }
         finally

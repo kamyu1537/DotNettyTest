@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Collections.Concurrent;
+using System.Security.AccessControl;
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
@@ -12,19 +13,37 @@ namespace Common.Decoder;
 public class ProtocolBufferPacketDecoder : ByteToMessageDecoder
 {
     private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Shared;
-    
+
     protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
     {
         ArgumentNullException.ThrowIfNull(input);
 
         var length = input.ReadableBytes;
-        var array = ArrayPool.Rent(length);
+        byte[]? rentedArray = null;
 
         try
         {
-            input.ReadBytes(array, 0, length);
+            Span<byte> span;
+            if (input.HasArray)
+            {
+                var array = input.Array;
+                if (array is null)
+                {
+                    throw new InvalidOperationException("array is null");
+                }
 
-            var packet = Packet.Parser.ParseFrom(array.AsSpan(0, length));
+                span = input.Array.AsSpan(input.ArrayOffset + input.ReaderIndex, length);
+                input.SetReaderIndex(input.ReaderIndex + length);
+                input.MarkReaderIndex();
+            }
+            else
+            {
+                rentedArray = ArrayPool.Rent(length);
+                input.ReadBytes(rentedArray, 0, length);
+                span = rentedArray.AsSpan(0, length);
+            }
+
+            var packet = Packet.Parser.ParseFrom(span);
             var field = Packet.Descriptor.FindFieldByNumber((int)packet.DataCase);
             if (field?.Accessor.GetValue(packet) is not IMessage message)
             {
@@ -35,12 +54,16 @@ public class ProtocolBufferPacketDecoder : ByteToMessageDecoder
         }
         finally
         {
-            ArrayPool.Return(array);
+            if (rentedArray is not null)
+            {
+                ArrayPool.Return(rentedArray);
+            }
         }
     }
 
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
+        Console.WriteLine($"ProtocolBufferPacketDecoder Exception: {exception}");
         context.FireExceptionCaught(exception);
     }
 }
