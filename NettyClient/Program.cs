@@ -5,9 +5,8 @@ using NettyClient;
 const int clientCount = 1;
 var endpoint = new IPEndPoint(IPAddress.Loopback, 20000);
 #else
-const int clientCount = 1000;
+const int clientCount = 3000;
 var endpoint = new IPEndPoint(IPAddress.Loopback, 20000);
-// var endpoint = new IPEndPoint(IPAddress.Parse("10.70.210.12"), 20000);
 #endif
 
 var options = new ParallelOptions { MaxDegreeOfParallelism = clientCount };
