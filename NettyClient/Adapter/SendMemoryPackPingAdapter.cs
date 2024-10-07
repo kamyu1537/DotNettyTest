@@ -1,4 +1,5 @@
-﻿using DotNetty.Transport.Channels;
+﻿using Common.Utils;
+using DotNetty.Transport.Channels;
 using Protocol.MemoryPack.Packet;
 
 namespace NettyClient.Adapter;
@@ -12,6 +13,7 @@ public class SendMemoryPackPingAdapter : ChannelHandlerAdapter
         context.WriteAndFlushAsync(new PingPacket
         {
             ChannelId = context.Channel.Id.AsLongText(),
+            Message = RandomString.Generate(1024),
             Data = Random.Shared.Next(),
             Time = DateTime.UtcNow
         });

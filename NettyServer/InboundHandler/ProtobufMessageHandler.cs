@@ -1,4 +1,5 @@
-﻿using DotNetty.Transport.Channels;
+﻿using Common.Utils;
+using DotNetty.Transport.Channels;
 using Google.Protobuf;
 using Protocol.Protobuf;
 
@@ -21,6 +22,7 @@ public class ProtobufMessageHandler : SimpleChannelInboundHandler<IMessage>
         await context.WriteAndFlushAsync(new Pong
         {
             ChannelId = context.Channel.Id.AsLongText(),
+            Message = RandomString.Generate(1024),
             Data = Random.Shared.Next(),
             Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         });
@@ -28,7 +30,7 @@ public class ProtobufMessageHandler : SimpleChannelInboundHandler<IMessage>
 
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
-        Console.WriteLine("[MessageHandler] ExceptionCaught: " + exception);
+        Console.WriteLine("ProtobufMessageHandler ExceptionCaught: " + exception);
         context.FireExceptionCaught(exception);
     }
 }

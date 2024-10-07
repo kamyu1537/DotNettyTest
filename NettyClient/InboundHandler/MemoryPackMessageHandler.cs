@@ -1,4 +1,5 @@
-﻿using DotNetty.Transport.Channels;
+﻿using Common.Utils;
+using DotNetty.Transport.Channels;
 using Protocol.MemoryPack;
 using Protocol.MemoryPack.Packet;
 
@@ -22,6 +23,7 @@ public class MemoryPackMessageHandler : SimpleChannelInboundHandler<IPacket>
         await context.WriteAndFlushAsync(new PingPacket
         {
             ChannelId = context.Channel.Id.AsLongText(),
+            Message = RandomString.Generate(1024),
             Data = Random.Shared.Next(),
             Time = DateTime.UtcNow
         });
@@ -29,7 +31,7 @@ public class MemoryPackMessageHandler : SimpleChannelInboundHandler<IPacket>
     
     public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
     {
-        Console.WriteLine(exception);
-        context.CloseAsync();
+        Console.WriteLine("MemoryPackMessageHandler ExceptionCaught: " + exception);
+        context.FireExceptionCaught(exception);
     }
 }

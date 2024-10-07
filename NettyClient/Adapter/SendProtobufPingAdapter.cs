@@ -1,4 +1,5 @@
-﻿using DotNetty.Transport.Channels;
+﻿using Common.Utils;
+using DotNetty.Transport.Channels;
 using Protocol.Protobuf;
 
 namespace NettyClient.Adapter;
@@ -12,6 +13,7 @@ public class SendProtobufPingAdapter : ChannelHandlerAdapter
         var message = new Ping
         {
             ChannelId = context.Channel.Id.AsLongText(),
+            Message = RandomString.Generate(1024),
             Data = Random.Shared.Next(),
             Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
