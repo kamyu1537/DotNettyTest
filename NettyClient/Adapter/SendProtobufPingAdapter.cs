@@ -9,12 +9,14 @@ public class SendProtobufPingAdapter : ChannelHandlerAdapter
     {
         base.ChannelActive(context);
 
-        context.WriteAndFlushAsync(new Ping
+        var message = new Ping
         {
             ChannelId = context.Channel.Id.AsLongText(),
             Data = Random.Shared.Next(),
             Time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        });
-        Console.WriteLine($"Protobuf Send: {context.Channel.Id}");
+        };
+        
+        context.WriteAndFlushAsync(message);
+        Console.WriteLine($"Protobuf {message}");
     }
 }

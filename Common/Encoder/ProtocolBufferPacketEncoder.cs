@@ -25,12 +25,11 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
 
         var packet = new Packet();
         field.Accessor.SetValue(packet, message);
-
         var length = packet.CalculateSize();
+        
         using var memoryOwner = MemoryPool.Rent(length);
-
         var memory = memoryOwner.Memory;
-        packet.WriteTo(memory.Span);
+        packet.WriteTo(memory.Span[..length]);
 
         if (output.HasArray)
         {
@@ -46,5 +45,11 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
 #endif
             output.WriteBytes(memory.Span[..length].ToArray());
         }
+    }
+    
+    public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+    {
+        Console.WriteLine(exception);
+        base.ExceptionCaught(context, exception);
     }
 }

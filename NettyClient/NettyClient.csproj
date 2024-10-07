@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;MEMORYPACK</DefineConstants>
+      <DefineConstants>TRACE;PROTOBUF</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DefineConstants>TRACE;MEMORYPACK</DefineConstants>
+      <DefineConstants>TRACE;PROTOBUF</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
