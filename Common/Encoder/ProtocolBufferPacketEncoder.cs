@@ -15,7 +15,7 @@ public class ProtocolBufferPacketEncoder : MessageToByteEncoder<IMessage>
 {
     private static readonly MemoryPool<byte> MemoryPool = MemoryPool<byte>.Shared;
     private static readonly ConcurrentDictionary<MessageDescriptor, FieldDescriptor> FieldDescriptorCache = new(Packet.Descriptor.Fields.InDeclarationOrder().ToDictionary(x => x.MessageType, x => x));
-    private static readonly ObjectPool<Packet> PacketPool = ObjectPool.Create(new ProtocolBufferPacketObjectPoolPolicy());
+    private static readonly ObjectPool<Packet> PacketPool = new DefaultObjectPool<Packet>(new ProtocolBufferPacketObjectPoolPolicy(), 1024);
 
     protected override void Encode(IChannelHandlerContext context, IMessage message, IByteBuffer output)
     {
