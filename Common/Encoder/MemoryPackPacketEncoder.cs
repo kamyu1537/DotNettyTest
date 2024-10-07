@@ -19,15 +19,20 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
 
         var dummy = Writer;
         using var memoryOwner = MemoryPool.Rent();
-        var memory = memoryOwner.Memory;
-        
         using var state = MemoryPackWriterOptionalStatePool.Rent(null);
-
+        
+        var memory = memoryOwner.Memory;
         var writer = new MemoryPackWriter<DummyBufferWriter>(ref dummy, memory.Span, state);
-        writer.WriteValue(message);
-        var length = writer.WrittenCount;
-        writer.Flush();
 
-        output.WriteBytes(memory.ToArray(), 0, length);
+        try
+        {
+            writer.WriteValue(message);
+            var length = writer.WrittenCount;
+            output.WriteBytes(memory.ToArray(), 0, length);
+        }
+        finally
+        {
+            writer.Flush();    
+        }
     }
 }
