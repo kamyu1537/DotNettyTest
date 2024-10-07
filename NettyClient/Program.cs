@@ -1,10 +1,6 @@
 ﻿using System.Net;
 using NettyClient;
 
-#if MEMORYPACK
-Protocol.MemoryPack.PacketManager.RegisterPacket();
-#endif
-
 #if DEBUG
 const int clientCount = 1;
 var endpoint = new IPEndPoint(IPAddress.Loopback, 20000);

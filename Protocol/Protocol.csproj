@@ -14,7 +14,6 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="MemoryPack" Version="1.21.3" />
-      <PackageReference Include="MessagePack" Version="2.5.172" />
     </ItemGroup>
 
     <ItemGroup>

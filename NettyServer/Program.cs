@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Common.Adapter;
-using Common.Codec;
+using Common.Decoder;
+using Common.Encoder;
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Bootstrapping;
@@ -8,17 +9,12 @@ using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using NettyServer.Adapter;
 using NettyServer.InboundHandler;
-using Protocol.MemoryPack;
 
 var bossGroup = new MultithreadEventLoopGroup(1);
 var workerGroup = new MultithreadEventLoopGroup();
 
 try
 {
-#if MEMORYPACK
-    PacketManager.RegisterPacket();
-#endif // MEMORYPACK
-    
     var bootstrap = new ServerBootstrap();
     bootstrap.Group(bossGroup, workerGroup)
         .Option(ChannelOption.Allocator, PooledByteBufferAllocator.Default)
@@ -46,18 +42,15 @@ try
 #if PROTOBUF
             pipeline.AddLast(new DotNetty.Codecs.Protobuf.ProtobufVarint32FrameDecoder());
             pipeline.AddLast(new DotNetty.Codecs.Protobuf.ProtobufVarint32LengthFieldPrepender());
-            pipeline.AddLast(new ProtobufPacketCodec());
+            pipeline.AddLast(new ProtocolBufferPacketEncoder());
+            pipeline.AddLast(new ProtocolBufferPacketDecoder());
             pipeline.AddLast(new ProtobufMessageHandler());
 #endif // PROTOBUF
 
 #if MEMORYPACK
-            pipeline.AddLast(new MemoryPackPacketCodec());
+            pipeline.AddLast(new MemoryPackPacketEncoder());
+            pipeline.AddLast(new MemoryPackPacketDecoder());
             pipeline.AddLast(new MemoryPackMessageHandler());
-#endif // MEMORYPACK
-            
-#if MESSAGEPACK
-            pipeline.AddLast(new MessagePackPacketCodec());
-            pipeline.AddLast(new MessagePackMessageHandler());
 #endif // MEMORYPACK
         }));
 

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using Common.Adapter;
-using Common.Codec;
+using Common.Decoder;
+using Common.Encoder;
 using DotNetty.Codecs;
-using DotNetty.Codecs.Protobuf;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
@@ -34,26 +34,19 @@ public class Client(EndPoint endpoint)
                     pipeline.AddFirst(new ReadCompleteFlushAdapter());
                     
 #if PROTOBUF
-                    pipeline.AddLast(new ProtobufVarint32FrameDecoder());
-                    pipeline.AddLast(new ProtobufVarint32LengthFieldPrepender());
-                    pipeline.AddLast(new ProtobufPacketCodec());
+                    pipeline.AddLast(new DotNetty.Codecs.Protobuf.ProtobufVarint32FrameDecoder());
+                    pipeline.AddLast(new DotNetty.Codecs.Protobuf.ProtobufVarint32LengthFieldPrepender());
+                    pipeline.AddLast(new ProtocolBufferPacketEncoder());
+                    pipeline.AddLast(new ProtocolBufferPacketDecoder());
                     pipeline.AddLast(new ProtobufMessageHandler());
-                    
                     pipeline.AddLast(new SendProtobufPingAdapter());
 #endif // PROTOBUF
 
 #if MEMORYPACK
-                    pipeline.AddLast(new MemoryPackPacketCodec());
+                    pipeline.AddLast(new MemoryPackPacketEncoder());
+                    pipeline.AddLast(new MemoryPackPacketDecoder());
                     pipeline.AddLast(new MemoryPackMessageHandler());
-                    
                     pipeline.AddLast(new SendMemoryPackPingAdapter());
-#endif // MEMORYPACK
-                    
-#if MESSAGEPACK
-                    pipeline.AddLast(new MessagePackPacketCodec());
-                    pipeline.AddLast(new MessagePackMessageHandler());
-
-                    pipeline.AddLast(new SendMessagePackPingAdapter());
 #endif // MEMORYPACK
                 }));
 
