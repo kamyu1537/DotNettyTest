@@ -10,7 +10,7 @@ namespace Common.Encoder;
 
 public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
 {
-    private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Shared;
+    private static readonly MemoryPool<byte> MemoryPool = MemoryPool<byte>.Shared;
     private static readonly DummyBufferWriter Writer = new();
     
     protected override void Encode(IChannelHandlerContext context, IPacket message, IByteBuffer output)
@@ -18,21 +18,16 @@ public class MemoryPackPacketEncoder : MessageToByteEncoder<IPacket>
         ArgumentNullException.ThrowIfNull(message);
 
         var dummy = Writer;
-        var array = ArrayPool.Rent(65535);
-        var state = MemoryPackWriterOptionalStatePool.Rent(null);
+        using var memoryOwner = MemoryPool.Rent();
+        var memory = memoryOwner.Memory;
+        
+        using var state = MemoryPackWriterOptionalStatePool.Rent(null);
 
-        try
-        {
-            var writer = new MemoryPackWriter<DummyBufferWriter>(ref dummy, array.AsSpan(), state);
-            writer.WriteValue(message);
-            var length = writer.WrittenCount;
-            writer.Flush();
+        var writer = new MemoryPackWriter<DummyBufferWriter>(ref dummy, memory.Span, state);
+        writer.WriteValue(message);
+        var length = writer.WrittenCount;
+        writer.Flush();
 
-            output.WriteBytes(array, 0, length);
-        }
-        finally
-        {
-            ArrayPool.Return(array);
-        }
+        output.WriteBytes(memory.ToArray(), 0, length);
     }
 }
