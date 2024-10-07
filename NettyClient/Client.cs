@@ -25,8 +25,15 @@ public class Client(EndPoint endpoint)
                 .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                 {
                     var pipeline = channel.Pipeline;
-                    // packet size limit
+                    // packet size
                     pipeline.AddLast(new LengthFieldPrepender(4));
+                    pipeline.AddLast(new LengthFieldBasedFrameDecoder(
+                        maxFrameLength: 1024 * 8,
+                        lengthFieldOffset: 0,
+                        lengthFieldLength: 4,
+                        lengthAdjustment: 0,
+                        initialBytesToStrip: 4
+                    ));
 
                     // adapter
                     pipeline.AddFirst(new ConnectionLogAdapter());

@@ -24,9 +24,10 @@ try
         {
             var pipeline = channel.Pipeline;
 
-            // packet size limit
+            // packet size
+            pipeline.AddLast(new LengthFieldPrepender(4));
             pipeline.AddLast(new LengthFieldBasedFrameDecoder(
-                maxFrameLength: 1024 * 1024,
+                maxFrameLength: 1024 * 8,
                 lengthFieldOffset: 0,
                 lengthFieldLength: 4,
                 lengthAdjustment: 0,
