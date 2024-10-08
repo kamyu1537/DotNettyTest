@@ -4,6 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <!-- <EnableDefaultCompileItems>false</EnableDefaultCompileItems> -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,7 +19,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\**\*.proto" ProtoRoot="Protos" OutputDir="%(ProtoRoot)Generated" GrpcServices="None" />
+        <Protobuf Include="Protobuf\**\*.proto" ProtoRoot="Protobuf" OutputDir="%(ProtoRoot)Generated" GrpcServices="None" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ProtobufGenerated\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="ProtobufGenerated\**\*.cs" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <Protobuf_NoWarnMissingOutputDir>true</Protobuf_NoWarnMissingOutputDir>
+    </PropertyGroup>
 </Project>

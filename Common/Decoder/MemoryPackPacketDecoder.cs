@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Numerics;
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;

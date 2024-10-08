@@ -1,11 +1,8 @@
 ﻿using System.Buffers;
-using System.Collections.Concurrent;
-using System.Security.AccessControl;
 using DotNetty.Buffers;
 using DotNetty.Codecs;
 using DotNetty.Transport.Channels;
 using Google.Protobuf;
-using Google.Protobuf.Reflection;
 using Protocol.Protobuf;
 
 namespace Common.Decoder;
@@ -32,7 +29,7 @@ public class ProtocolBufferPacketDecoder : ByteToMessageDecoder
                     throw new InvalidOperationException("array is null");
                 }
 
-                span = input.Array.AsSpan(input.ArrayOffset + input.ReaderIndex, length);
+                span = array.AsSpan(input.ArrayOffset + input.ReaderIndex, length);
                 input.SetReaderIndex(input.ReaderIndex + length);
                 input.MarkReaderIndex();
             }
